@@ -72,3 +72,25 @@ def plot_contourf(x, y, z, radial_filter=False, levels=None, z_label=None):
     cbar = fig.colorbar(CF, shrink=0.8, panchor=(1., 0.4))
     if z_label!=None:
         cbar.ax.set_ylabel(z_label, size=labelsize, labelpad=-20, y=1.15, rotation=0)
+
+
+def plot_surfaces_along_y_at_random(surface_list, y_label=r'$y~[\mathrm{m}]$', z_label=r'$\eta~[\mathrm{m}]$'):
+    plt.figure()
+    Nx, Ny = (surface_list[0]).eta.shape
+    where = int(np.random.rand()*Ny)
+    for surf in surface_list:
+        plt.plot(surf.y, surf.eta[where,:], label=surf.name)
+    plt.xlabel(y_label)
+    plt.ylabel(z_label)
+    plt.legend()
+
+def plot_surfaces_along_y_at_pos(surface_list, x_pos, y_label=r'$y~[\mathrm{m}]$', z_label=r'$\eta~[\mathrm{m}]$'):
+    plt.figure()
+    x = (surface_list[0]).x
+    where = np.argmin(np.abs(x-x_pos))
+    for surf in surface_list:
+        plt.plot(surf.y, surf.eta[where,:], label=surf.name)
+    plt.xlabel(y_label)
+    plt.ylabel(z_label)
+    plt.legend()    
+            
