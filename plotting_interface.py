@@ -38,7 +38,8 @@ def plot_3d_as_2d(x, y, z, radial_filter=False):
     else:
         filt = 1
     plt.figure()
-    plt.imshow((filt*z).T, origin='lower', extent=(x[0]-dx//2, x[-1]+dx//2, y[0]-dy//2, y[-1]+dy//2, ))
+    plot_z = np.where(filt, z, None)
+    plt.imshow((plot_z).T, origin='lower', extent=(x[0]-dx//2, x[-1]+dx//2, y[0]-dy//2, y[-1]+dy//2, ))
     
         
 def plot_contours(x, y, z, radial_filter=False, levels=None, z_label=None):
@@ -66,7 +67,7 @@ def plot_contourf(x, y, z, radial_filter=False, levels=None, z_label=None):
         filt = 1
     fig = plt.figure()
     if levels==None:
-        CF = plt.contourf((filt*z).T, origin='lower', extent=(x[0]-dx//2, x[-1]+dx//2, y[0]-dy//2, y[-1]+dy//2, ), cmap=contour_colormap)
+        CF = plt.contourf((filt*z).T, origin='lower', extent=(x[0]-dx//2, x[-1]-dx//2, y[0]-dy//2, y[-1]-dy//2, ), cmap=contour_colormap)
     else:
         CF = plt.contourf((filt*z).T, levels, origin='lower', extent=(x[0]-dx//2, x[-1]+dx//2, y[0]-dy//2, y[-1]+dy//2, ), cmap=contour_colormap)
     cbar = fig.colorbar(CF, shrink=0.8, panchor=(1., 0.4))
@@ -94,3 +95,5 @@ def plot_surfaces_along_y_at_pos(surface_list, x_pos, y_label=r'$y~[\mathrm{m}]$
     plt.ylabel(z_label)
     plt.legend()    
             
+def show():
+    plt.show()
