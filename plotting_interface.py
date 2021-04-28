@@ -229,11 +229,11 @@ def plot_disp_shell(axes, h, z, U, psi, label='', plot_type='surf'):
     elif plot_type=='contour':
         plt.contour(kx, ky, ww, label=label)
 
-def plot_multiple_disp_rel(h, z, U_list, psi_list, label_list, plot_type='surf'):
+def plot_multiple_disp_rel(h, z_list, U_list, psi_list, label_list, plot_type='surf'):
     fig = plt.figure()
     axes = fig.gca(projection='3d')
     for i in range(0, len(U_list)):
-        plot_disp_shell(axes, h, z, U_list[i], psi_list[i], label_list[i], plot_type)
+        plot_disp_shell(axes, h, z_list[i], U_list[i], psi_list[i], label_list[i], plot_type)
     plt.legend()
 
 def plot_disp_rel_at(at_w, h, z, U, psi, color, extent=None):
@@ -258,11 +258,11 @@ def plot_disp_rel_at(at_w, h, z, U, psi, color, extent=None):
         plt.ylim(extent[2], extent[3])
     return CS
 
-def plot_multiple_disp_rel_at(at_w, h, z, U_list, psi_list, label_list, plot_type='surf', extent=None):
+def plot_multiple_disp_rel_at(at_w, h, z_list, U_list, psi_list, label_list, plot_type='surf', extent=None):
     plt.figure()
     lines = []
     for i in range(0, len(U_list)):
-        CS = plot_disp_rel_at(at_w, h, z, U_list[i], psi_list[i], color_list[i], extent)
+        CS = plot_disp_rel_at(at_w, h, z_list[i], U_list[i], psi_list[i], color_list[i], extent)
         lines.append(CS.collections[0])    
     plt.legend(lines, label_list)
 
