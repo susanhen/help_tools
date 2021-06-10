@@ -212,7 +212,7 @@ def plot_disp_rel_kx_ky(w, h):
 
 
 
-def plot_disp_shell(axes, h, z, U, psi, label='', plot_type='surf'):
+def plot_disp_shell(axes, h, z, U, psi, label='', plot_type='surf', linestyles='line', put_clabel=True):
     g = 9.81
     alpha = 0.5 # value that defines opacity in plot
     dk = 0.005
@@ -220,21 +220,41 @@ def plot_disp_shell(axes, h, z, U, psi, label='', plot_type='surf'):
     dtheta=0.05
     theta=np.arange(0, 2*np.pi+dtheta, dtheta)
     kk, th = np.meshgrid(k, theta, indexing='ij')
-    U_eff = 2*kk*np.sum(U*np.exp(np.outer(2*kk,z)), axis=1).reshape(kk.shape)
+    U_eff = 2*kk*np.sum(U*np.exp(np.outer(2*kk,z)), axis=1).reshape(kk.shape)*np.abs(z[1]-z[0])
     ww = kk*U_eff*np.cos(theta-psi) + np.sqrt(kk*g*np.tanh(kk*h))
     kx = kk*np.cos(th)
     ky = kk*np.sin(th)
     if plot_type=='surf':
         axes.plot_surface(kx, ky, ww, alpha=alpha, label=label)
+        axes.set_xlabel(r'$k_x~[\mathrm{rad~m}^{-1}]$')
+        axes.set_ylabel(r'$k_y~[\mathrm{rad~m}^{-1}]$')
+        axes.set_zlabel(r'$\omega~[\mathrm{rad~s}^{-1}]$')
     elif plot_type=='contour':
-        plt.contour(kx, ky, ww, label=label)
+        levels = [0.6, 0.8, 1.0, 1.2, 1.4, 1.6, 1.8]
+        c = plt.contour(kx, ky, ww, levels=levels, linestyles=linestyles)#, label=label)
+        if put_clabel:
+            plt.clabel(c)
+        plt.xlabel(r'$k_x~[\mathrm{rad~m}^{-1}]$') 
+        plt.ylabel(r'$k_y~[\mathrm{rad~m}^{-1}]$')
+        plt.axis('equal')
 
-def plot_multiple_disp_rel(h, z_list, U_list, psi_list, label_list, plot_type='surf'):
+def plot_multiple_disp_rel(h, z_list, U_list, psi_list, label_list, plot_type='surf', linestyle_list=None):
+    if linestyle_list is None:
+        linestyle_List = len(z_list) * ['solid']
     fig = plt.figure()
-    axes = fig.gca(projection='3d')
-    for i in range(0, len(U_list)):
-        plot_disp_shell(axes, h, z_list[i], U_list[i], psi_list[i], label_list[i], plot_type)
-    plt.legend()
+    if plot_type=='surf':
+        axes = fig.gca(projection='3d')
+        for i in range(0, len(U_list)):
+            plot_disp_shell(axes, h, z_list[i], U_list[i], psi_list[i], label_list[i], plot_type)
+    else:
+        axes = plt.subplot(1,1,1)
+        for i in range(0, len(U_list)):
+            if i==0:
+                plot_disp_shell(axes, h, z_list[i], U_list[i], psi_list[i], label_list[i], plot_type, linestyles=linestyle_list[i], put_clabel=True)
+            else:
+                plot_disp_shell(axes, h, z_list[i], U_list[i], psi_list[i], label_list[i], plot_type, linestyles=linestyle_list[i], put_clabel=False)
+    if plot_type!='surf':
+        plt.legend()
 
 def plot_disp_rel_at(at_w, h, z, U, psi, color, extent=None):
     '''
@@ -278,3 +298,6 @@ def figure():
 
 def show():
     plt.show()
+
+def colorbar():
+    plt.colorbar()

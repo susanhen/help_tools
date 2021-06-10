@@ -16,7 +16,7 @@ def cart2finePol(x, y, cart, Nr=200, Ntheta=400):
     x_indices = np.argmin(np.abs(np.outer(rr*np.cos(th), np.ones(len(x)))-np.outer(np.ones(rr.shape), x)), axis=1).reshape(rr.shape)
     y_indices = np.argmin(np.abs(np.outer(rr*np.sin(th), np.ones(len(y)))-np.outer(np.ones(rr.shape) , y)), axis=1).reshape(rr.shape)
     # values outside the cartesian domain will get boundary values in correct backmapping the values should be ignored
-    pol = cart[x_indices, y_indices]
+    pol = cart[x_indices, y_indices]*rr # Jacobian applied
     return r, theta, pol
 
 def averagePol2cart(r, theta, pol, x, y):
@@ -39,4 +39,4 @@ def averagePol2cart(r, theta, pol, x, y):
             counter[x_indices[i], y_indices[i]] += 1
 
     cart = np.where(counter>0, cart/counter, 0)
-    return cart
+    return cart/rr
