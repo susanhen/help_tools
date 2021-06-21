@@ -266,7 +266,7 @@ def plot_disp_rel_at(at_w, h, z, U, psi, color, extent=None):
     dtheta=0.05
     theta=np.arange(0, 2*np.pi+dtheta, dtheta)
     kk, th = np.meshgrid(k, theta, indexing='ij')
-    U_eff = 2*kk*np.sum(U*np.exp(np.outer(2*kk,z)), axis=1).reshape(kk.shape)
+    U_eff = 2*kk*np.sum(U*np.exp(np.outer(2*kk,z)), axis=1).reshape(kk.shape)*np.abs(z[1]-z[0])
     ww = kk*U_eff*np.cos(th-psi) + np.sqrt(kk*g*np.tanh(kk*h))
     kx = kk*np.cos(th)
     ky = kk*np.sin(th)
@@ -295,6 +295,9 @@ def savefig(fn, tight=True):
 
 def figure():
     plt.figure()
+
+def plot(x, y):
+    plt.plot(x, y)
 
 def show():
     plt.show()
