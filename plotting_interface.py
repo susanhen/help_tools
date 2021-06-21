@@ -19,7 +19,7 @@ def plot_3d_surface(x, y, z, radial_filter=False):
     else:
         filt=1
     fig = plt.figure()
-    axes = fig.gca(projection='3d')
+    axes = fig.add_subplot(111, projection='3d')
     x_mesh, y_mesh = np.meshgrid(x, y, indexing='ij')
     axes.plot_surface(x_mesh, y_mesh, (filt*z), cmap=cm.coolwarm)
 
