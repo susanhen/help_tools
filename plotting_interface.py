@@ -23,39 +23,45 @@ def plot_3d_surface(x, y, z, radial_filter=False):
     x_mesh, y_mesh = np.meshgrid(x, y, indexing='ij')
     axes.plot_surface(x_mesh, y_mesh, (filt*z), cmap=cm.coolwarm)
 
-def plot_3d_as_2d(x, y, z, radial_filter=False, extent=None):
+def plot_3d_as_2d(x, y, z, radial_filter=False, extent=None, ax=None):
     dx = x[1]-x[0]
     dy = y[1]-y[0]
     if radial_filter:
         filt = get_radial_filter(x, y)
     else:
         filt = 1
-    plt.figure()
-    plt.imshow((filt*z).T, origin='lower', extent=(x[0]-dx//2, x[-1]+dx//2, y[0]-dy//2, y[-1]+dy//2 ), aspect=1)
+    if ax is None:
+        fig, ax = plt.subplots()
+    ax.imshow((filt*z).T, origin='lower', extent=(x[0]-dx//2, x[-1]+dx//2, y[0]-dy//2, y[-1]+dy//2 ), aspect=1)
     if not extent is None:
-        plt.xlim(extent[0], extent[1])
-        plt.ylim(extent[2], extent[3])
+        ax.set_xlim(extent[0], extent[1])
+        ax.set_ylim(extent[2], extent[3])
+    return ax
     
-def plot_kx_ky_coeffs(kx, ky, coeffs, radial_filter=False, extent=None):     
-    plot_3d_as_2d(kx, ky, coeffs, radial_filter, extent)    
-    plt.xlabel(r'$k_x~[\mathrm{rad~m}^{-1}]$') 
-    plt.ylabel(r'$k_y~[\mathrm{rad~m}^{-1}]$')
+def plot_kx_ky_coeffs(kx, ky, coeffs, radial_filter=False, extent=None, ax=None):     
+    ax = plot_3d_as_2d(kx, ky, coeffs, radial_filter, extent)    
+    ax.set_xlabel(r'$k_x~[\mathrm{rad~m}^{-1}]$') 
+    ax.set_ylabel(r'$k_y~[\mathrm{rad~m}^{-1}]$')
+    return ax
      
-def plot_kx_ky_spec(kx, ky, spec, radial_filter=False, extent=None):    
-    plot_3d_as_2d(kx, ky, spec, radial_filter, extent)
-    plt.xlabel(r'$k_x~[\mathrm{rad~m}^{-1}]$') 
-    plt.ylabel(r'$k_y~[\mathrm{rad~m}^{-1}]$')
+def plot_kx_ky_spec(kx, ky, spec, radial_filter=False, extent=None, ax=None):    
+    ax = plot_3d_as_2d(kx, ky, spec, radial_filter, extent, ax)
+    ax.set_xlabel(r'$k_x~[\mathrm{rad~m}^{-1}]$') 
+    ax.set_ylabel(r'$k_y~[\mathrm{rad~m}^{-1}]$')
+    return ax
 
-def plot_k_w_spec(k, w, spec, disp_filter=False, extent=None):  
-    plot_3d_as_2d(k, w, spec, disp_filter, extent)    
-    plt.xlabel(r'$k~[\mathrm{rad~m}^{-1}]$') 
-    plt.ylabel(r'$\omega~[\mathrm{rad~Hz}]$')
+def plot_k_w_spec(k, w, spec, disp_filter=False, extent=None, ax=None):  
+    ax = plot_3d_as_2d(k, w, spec, disp_filter, extent, ax)    
+    ax.set_xlabel(r'$k~[\mathrm{rad~m}^{-1}]$') 
+    ax.set_ylabel(r'$\omega~[\mathrm{rad~Hz}]$')
+    return ax
 
-def plot_wavenumber_spec(k, spec, scaled=True, k_cut_off=None, extent=None):
-    plot_wavenumber_specs([k], [spec], scaled, None, k_cut_off, extent)
+def plot_wavenumber_spec(k, spec, scaled=True, k_cut_off=None, extent=None, ax=None):
+    plot_wavenumber_specs([k], [spec], scaled, None, k_cut_off, extent, ax)
 
-def plot_wavenumber_specs(k_list, spec_list, scaled=True, labels=None, k_cut_off=None, extent=None):
-    plt.figure()
+def plot_wavenumber_specs(k_list, spec_list, scaled=True, labels=None, k_cut_off=None, extent=None, ax=None):
+    if ax is None:
+        fig, ax = np.subplots()
     for i in range(0, len(k_list)):
         k = k_list[i]
         spec = spec_list[i]
@@ -71,20 +77,22 @@ def plot_wavenumber_specs(k_list, spec_list, scaled=True, labels=None, k_cut_off
             plt.plot(k[:last_ind], spec[:last_ind]/scaling)
         else:
             plt.plot(k[:last_ind], spec[:last_ind]/scaling, label=labels[i])
-    plt.xlabel(r'$k~[\mathrm{rad~m}^{-1}]$')
+    ax.set_xlabel(r'$k~[\mathrm{rad~m}^{-1}]$')
     if scaled:
-        plt.ylabel(r'$F(k)/\max(F(k))$')
+        ax.set_ylabel(r'$F(k)/\max(F(k))$')
     else:
-        plt.ylabel(r'$F(k)~[\mathrm{m}^3]$')
+        ax.set_ylabel(r'$F(k)~[\mathrm{m}^3]$')
     if not labels is None:
-        plt.legend()
+        ax.set_legend()
     if not extent is None:
-        plt.xlim(extent[0], extent[1])
-        plt.ylim(extent[2], extent[3])
+        ax.set_xlim(extent[0], extent[1])
+        ax.set_ylim(extent[2], extent[3])
+    return ax
 
 
-def plot_ang_frequency_specs(w_list, spec_list, scaled=True, labels=None, w_cut_off=None, extent=None):
-    plt.figure()
+def plot_ang_frequency_specs(w_list, spec_list, scaled=True, labels=None, w_cut_off=None, extent=None, ax=None):
+    if ax is None:
+        fig, ax = plt.subplots()
     for i in range(0, len(w_list)):
         w = w_list[i]
         spec = spec_list[i]
@@ -100,21 +108,23 @@ def plot_ang_frequency_specs(w_list, spec_list, scaled=True, labels=None, w_cut_
             plt.plot(w[:last_ind], spec[:last_ind]/scaling)
         else:
             plt.plot(w[:last_ind], spec[:last_ind]/scaling, label=labels[i])
-    plt.xlabel(r'$\omega~[\mathrm{rad~Hz}]$')
+    ax.set_xlabel(r'$\omega~[\mathrm{rad~Hz}]$')
     if scaled:
-        plt.ylabel(r'$F(\omega)/\max(F(\omega))$')
+        ax.set_ylabel(r'$F(\omega)/\max(F(\omega))$')
     else:
-        plt.ylabel(r'$F(\omega)~[\mathrm{m}^2/\mathrm{Hz}]$')   
+        ax.set_ylabel(r'$F(\omega)~[\mathrm{m}^2/\mathrm{Hz}]$')   
     if not extent is None:
-        plt.xlim(extent[0], extent[1])
-        plt.ylim(extent[2], extent[3])
+        ax.set_xlim(extent[0], extent[1])
+        ax.set_ylim(extent[2], extent[3])
+    return ax
 
-def plot_ang_frequency_spec(w, spec, scaled=True, w_cut_off=None, extent=None):
-    plot_ang_frequency_specs([w], [spec], scaled, None, w_cut_off, extent)
+def plot_ang_frequency_spec(w, spec, scaled=True, w_cut_off=None, extent=None, ax=None):
+    plot_ang_frequency_specs([w], [spec], scaled, None, w_cut_off, extent, ax)
 
 
-def plot_frequency_specs(f_list, spec_list, scaled=True, labels=None, f_cut_off=None, extent=None):
-    plt.figure()
+def plot_frequency_specs(f_list, spec_list, scaled=True, labels=None, f_cut_off=None, extent=None, ax=None):
+    if ax is None:
+        fig, ax = plt.subplots()
     for i in range(0, len(f_list)):
         f = f_list[i]
         spec = spec_list[i]
@@ -130,43 +140,45 @@ def plot_frequency_specs(f_list, spec_list, scaled=True, labels=None, f_cut_off=
             plt.plot(f[:last_ind], spec[:last_ind]/scaling)
         else:
             plt.plot(f[:last_ind], spec[:last_ind]/scaling, label=labels[i])
-    plt.xlabel(r'$f~[\mathrm{rad~Hz}]$')
+    ax.set_xlabel(r'$f~[\mathrm{rad~Hz}]$')
     if scaled:
-        plt.ylabel(r'$F(f)/\max(F(f))$')
+        ax.set_ylabel(r'$F(f)/\max(F(f))$')
     else:
-        plt.ylabel(r'$F(f)~[\mathrm{m}^2/\mathrm{Hz}]$') 
+        ax.set_ylabel(r'$F(f)~[\mathrm{m}^2/\mathrm{Hz}]$') 
     if not extent is None:
-        plt.xlim(extent[0], extent[1])
-        plt.ylim(extent[2], extent[3])  
+        ax.set_xlim(extent[0], extent[1])
+        ax.set_ylim(extent[2], extent[3])  
 
-def plot_frequency_spec(f, spec, scaled=True, f_cut_off=None, extent=None):        
-    plot_frequency_specs([f], [spec], scaled, None, f_cut_off, extent)   
+def plot_frequency_spec(f, spec, scaled=True, f_cut_off=None, extent=None, ax=None):        
+    plot_frequency_specs([f], [spec], scaled, None, f_cut_off, extent, ax)   
     
         
-def plot_contours(x, y, z, radial_filter=False, levels=None, z_label=None, extent=None):
+def plot_contours(x, y, z, radial_filter=False, levels=None, z_label=None, extent=None, ax=None):
     if radial_filter:
         filt = get_radial_filter(x, y)
     else:
         filt = 1
-    fig = plt.figure()
+    if ax is None:
+        fig, ax = plt.subplots()
     if levels==None:
-        CS = plt.contour(x, y, (filt*z).T, origin='lower')    
+        CS = ax.contour(x, y, (filt*z).T, origin='lower')    
     else:
-        CS = plt.contour(x, y, (filt*z).T, levels, origin='lower')    
+        CS = ax.contour(x, y, (filt*z).T, levels, origin='lower')    
     cbar = fig.colorbar(CS, shrink=0.8)
     if z_label!=None:
         cbar.ax.set_ylabel(z_label, size=labelsize, labelpad=-40, y=1.15, rotation=0)
     if not extent is None:
-        plt.xlim(extent[0], extent[1])
-        plt.ylim(extent[2], extent[3])
+        ax.set_xlim(extent[0], extent[1])
+        ax.set_ylim(extent[2], extent[3])
     
-def plot_contourf(x, y, z, radial_filter=False, levels=None, z_label=None, extent=None):
+def plot_contourf(x, y, z, radial_filter=False, levels=None, z_label=None, extent=None, ax=None):
     
     if radial_filter:
         filt = get_radial_filter(x, y)
     else:
         filt = 1
-    fig = plt.figure()
+    if ax is None:
+        fig, ax = plt.subplots()
     if levels==None:
         CF = plt.contourf(x, y, (filt*z).T, origin='lower', cmap=contour_colormap)
     else:
@@ -175,8 +187,8 @@ def plot_contourf(x, y, z, radial_filter=False, levels=None, z_label=None, exten
     if z_label!=None:
         cbar.ax.set_ylabel(z_label, size=labelsize, labelpad=-20, y=1.15, rotation=0)
     if not extent is None:
-        plt.xlim(extent[0], extent[1])
-        plt.ylim(extent[2], extent[3])
+        ax.set_xlim(extent[0], extent[1])
+        ax.set_ylim(extent[2], extent[3])
 
 
 def plot_surfaces_along_y_at_random(surface_list, y_label=r'$y~[\mathrm{m}]$', z_label=r'$\eta~[\mathrm{m}]$'):
@@ -256,9 +268,29 @@ def plot_multiple_disp_rel(h, z_list, U_list, psi_list, label_list, plot_type='s
     if plot_type!='surf':
         plt.legend()
 
-def plot_disp_rel_at(at_w, h, z, U, psi, color, extent=None):
+def plot_disp_rel_at(at_w, h, z, U, psi, color, ax, extent=None):
     '''
-    psi: angle between waves and current
+    Plot the dispersion relation for provided frequencie(s) and the current profile U(z).
+    The calculations are based on the assumption of Stewart and Joy for the effective current
+    
+    Parameters:
+    -----------
+        input
+                at_w    array/float
+                        frequencie(s) of interest
+                z       array
+                        grid for velocity profile
+                U       array   
+                        velocity profile over z
+                psi     float
+                        angle between waves and current
+                color   string
+                        color for plotting 
+                extent  tupel/array optional
+                        to limit the extent of the drawing
+        output
+                CS      array
+                        representation of the contour(s)
     '''
     g = 9.81
     dk = 0.005
@@ -270,21 +302,65 @@ def plot_disp_rel_at(at_w, h, z, U, psi, color, extent=None):
     ww = kk*U_eff*np.cos(th-psi) + np.sqrt(kk*g*np.tanh(kk*h))
     kx = kk*np.cos(th)
     ky = kk*np.sin(th)
-    
-    CS = plt.contour(kx, ky, ww, origin='lower', levels=[at_w], colors=color)
-    plt.axes().set_aspect('equal')
+    if type(at_w) is float or type(at_w) is np.float64:
+        CS = ax.contour(kx, ky, ww, origin='lower', levels=[at_w], colors=color)
+    else:
+        CS = ax.contour(kx, ky, ww, origin='lower', levels=at_w, colors=color)
+    ax.set_aspect('equal')
     if not extent is None:
-        plt.xlim(extent[0], extent[1])
-        plt.ylim(extent[2], extent[3])
+        ax.set_xlim(extent[0], extent[1])
+        ax.set_ylim(extent[2], extent[3])
     return CS
 
 def plot_multiple_disp_rel_at(at_w, h, z_list, U_list, psi_list, label_list, plot_type='surf', extent=None):
-    plt.figure()
+    fig, ax = plt.subplots(1,1)
     lines = []
     for i in range(0, len(U_list)):
-        CS = plot_disp_rel_at(at_w, h, z_list[i], U_list[i], psi_list[i], color_list[i], extent)
+        CS = plot_disp_rel_at(at_w, h, z_list[i], U_list[i], psi_list[i], color_list[i], ax, extent)
         lines.append(CS.collections[0])    
-    plt.legend(lines, label_list)
+    ax[0].set_legend(lines, label_list)
+
+
+def plot_disp_rel_for_Ueff_at(at_w, h, U_eff, psi, color, ax, extent=None):
+    '''
+    Plot the dispersion relation for provided frequencie(s) and the current profile U(z).
+    The calculations are based on the assumption of Stewart and Joy for the effective current
+    
+    Parameters:
+    -----------
+        input
+                at_w    array/float
+                        frequencie(s) of interest
+                U_eff   array   
+                        velocity profile over z
+                psi     float
+                        angle between waves and current
+                color   string
+                        color for plotting 
+                extent  tupel/array optional
+                        to limit the extent of the drawing
+        output
+                CS      array
+                        representation of the contour(s)
+    '''
+    g = 9.81
+    dk = 0.005
+    k = np.arange(0.01, 0.7, dk)
+    dtheta=0.05
+    theta=np.arange(0, 2*np.pi+dtheta, dtheta)
+    kk, th = np.meshgrid(k, theta, indexing='ij')
+    ww = kk*U_eff*np.cos(th-psi) + np.sqrt(kk*g*np.tanh(kk*h))
+    kx = kk*np.cos(th)
+    ky = kk*np.sin(th)
+    if type(at_w) is float or type(at_w) is np.float64:
+        CS = ax.contour(kx, ky, ww, origin='lower', levels=[at_w], colors=color)
+    else:
+        CS = ax.contour(kx, ky, ww, origin='lower', levels=at_w, colors=color)
+    ax.set_aspect('equal')
+    if not extent is None:
+        ax.set_xlim(extent[0], extent[1])
+        ax.set_ylim(extent[2], extent[3])
+    return CS    
 
 
 def savefig(fn, tight=True):
