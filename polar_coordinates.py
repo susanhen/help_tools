@@ -1,22 +1,28 @@
 import numpy as np
 
+
+from scipy.interpolate import RectBivariateSpline
+
 def cart2finePol(x, y, cart, Nr=200, Ntheta=400):
     '''
     Currently implemented with origin at center
     '''
     xx, yy = np.meshgrid(x, y, indexing='ij')
-    r_square = xx**2 + yy**2
-    angles = np.arctan2(yy,xx)
-    angles = np.where(angles<0, angles+(2*np.pi), angles)
-    r_max = np.sqrt(np.max(r_square))
-    r_min = np.sqrt(np.min(r_square))
-    r = np.linspace(r_min, r_max, Nr)
-    theta = np.linspace(np.min(angles), np.max(angles), Ntheta, endpoint=True)
+    theta_cart = np.arctan2(yy, xx)
+    r_cart = np.sqrt(xx**2 + yy**2)
+    rmin = np.min(r_cart)
+    rmax = np.max(r_cart)
+    tmin = np.min(theta_cart)
+    tmax = np.max(theta_cart)
+    theta = np.linspace(tmin, tmax, Ntheta, endpoint=True)
+    r = np.linspace(rmin, rmax, Nr, endpoint=True)
+    F = RectBivariateSpline(x, y, cart)
     rr, th = np.meshgrid(r, theta, indexing='ij')
-    x_indices = np.argmin(np.abs(np.outer(rr*np.cos(th), np.ones(len(x)))-np.outer(np.ones(rr.shape), x)), axis=1).reshape(rr.shape)
-    y_indices = np.argmin(np.abs(np.outer(rr*np.sin(th), np.ones(len(y)))-np.outer(np.ones(rr.shape) , y)), axis=1).reshape(rr.shape)
-    # values outside the cartesian domain will get boundary values in correct backmapping the values should be ignored
-    pol = cart[x_indices, y_indices]*rr # Jacobian applied
+    x_pol = rr*np.cos(th)
+    y_pol = rr*np.sin(th)
+    pol = F(x_pol.ravel(), y_pol.ravel(), grid=False).reshape((Nr, Ntheta))
+
+
     return r, theta, pol
 
 def averagePol2cart(r, theta, pol, x, y):
@@ -40,3 +46,17 @@ def averagePol2cart(r, theta, pol, x, y):
 
     cart = np.where(counter>0, cart/counter, 0)
     return cart/rr
+
+
+def cart2cylindrical(t, x, y, cart, Nr=200, Ntheta=400):
+    '''
+    blabla
+    polar coordinates in (x,y)
+    '''
+    r = np.zeros(Nr)
+    theta = np.zeros(Ntheta)
+    Nt = len(t)
+    cylindrical = np.zeros((Nt, Nr, Ntheta))
+    for i in range(0, Nt):
+        r, theta, cylindrical[i,:,:] = cart2finePol(x, y, cart[i,:,:], Nr, Ntheta)
+    return 
