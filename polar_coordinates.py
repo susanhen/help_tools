@@ -3,9 +3,25 @@ import numpy as np
 
 from scipy.interpolate import RectBivariateSpline
 
-def cart2finePol(x, y, cart, Nr=200, Ntheta=400):
+def cart2pol(x, y, cart, Nr=200, Ntheta=360):
     '''
-    Currently implemented with origin at center
+    Conversion from cartesian to polar coordinates
+    Parameter:
+    ----------
+    input:
+            x       array
+                    1d array of x-axis
+            y       array
+                    1d array of y-axis
+            cart    2d array (dimensions matching x,y, 'ij'-indexing)
+                    matrix to be converted
+    output:
+            r       array
+                    1d array of r-axis
+            theta   array
+                    1d array of theta-axis
+            pol     2d array
+                    data in polar coordinats
     '''
     xx, yy = np.meshgrid(x, y, indexing='ij')
     theta_cart = np.arctan2(yy, xx)
@@ -21,34 +37,47 @@ def cart2finePol(x, y, cart, Nr=200, Ntheta=400):
     x_pol = rr*np.cos(th)
     y_pol = rr*np.sin(th)
     pol = F(x_pol.ravel(), y_pol.ravel(), grid=False).reshape((Nr, Ntheta))
-
-
     return r, theta, pol
 
-def averagePol2cart(r, theta, pol, x, y):
+def pol2cart(r, theta, pol, Nx=128, Ny=128):
     '''
-    return to cartesian coordinates when polar coordinates are fine
-    polar values are associated with a cartesian patch
-    it is averaged over all values associated with each patch
+    Conversion from polar to cartesian coordinates
+    Parameter:
+    ----------
+    input:
+            r       array
+                    1d array of r-axis
+            theta   array
+                    1d array of theta-axis
+            pol     2d array
+                    data in polar coordinats
+    output:
+            x       array
+                    1d array of x-axis
+            y       array
+                    1d array of y-axis
+            cart    2d array (dimensions matching x,y, 'ij'-indexing)
+                    matrix to be converted
     '''
     rr, th = np.meshgrid(r, theta, indexing='ij')
     x_pol = rr*np.cos(th)
     y_pol = rr*np.sin(th)
-    Nx = len(x)
-    Ny = len(y)
-    cart = np.zeros((Nx, Ny))
-    counter = np.zeros((Nx, Ny))
-    x_indices = np.argmin(np.abs(np.outer(x_pol, np.ones(Nx)) - np.outer(np.ones(x_pol.shape), x)), axis=1)
-    y_indices = np.argmin(np.abs(np.outer(y_pol, np.ones(Ny)) - np.outer(np.ones(y_pol.shape), y)), axis=1)
-    for i in range(0,len(x_indices)):
-            cart[x_indices[i], y_indices[i]] += pol.flatten()[i]
-            counter[x_indices[i], y_indices[i]] += 1
+    x_min = np.min(x_pol)
+    x_max = np.max(x_pol)
+    y_min = np.min(y_pol)
+    y_max = np.max(y_pol)
+    x = np.linspace(x_min, x_max, Nx, endpoint=True)
+    y = np.linspace(y_min, y_max, Ny, endpoint=True)
+    F = RectBivariateSpline(r, theta, pol)
+    xx, yy = np.meshgrid(x, y, indexing='ij')
+    r_cart = np.sqrt(xx**2+ yy**2)
+    th_cart = np.arctan2(xx,yy)
+    cart = F(r_cart.ravel(), th_cart.ravel(), grid=False).reshape((Nx, Ny))
+    return x, y, cart
 
-    cart = np.where(counter>0, cart/counter, 0)
-    return cart/rr
 
 
-def cart2cylindrical(t, x, y, cart, Nr=200, Ntheta=400):
+def cart2cylindrical(t, x, y, cart, Nr=200, Ntheta=360):
     '''
     blabla
     polar coordinates in (x,y)
@@ -58,5 +87,5 @@ def cart2cylindrical(t, x, y, cart, Nr=200, Ntheta=400):
     Nt = len(t)
     cylindrical = np.zeros((Nt, Nr, Ntheta))
     for i in range(0, Nt):
-        r, theta, cylindrical[i,:,:] = cart2finePol(x, y, cart[i,:,:], Nr, Ntheta)
+        r, theta, cylindrical[i,:,:] = cart2pol(x, y, cart[i,:,:], Nr, Ntheta)
     return 

@@ -15,29 +15,12 @@ class Helper(unittest.TestCase):
     def setUp(self):
         self.nothing = 0
 
-    def test_polar_coordinats(self, plot_it=False):
+    def test_cart2pol(self, plot_it=False):
         size = 128
         sigma = 16
         xx, yy, z = fspecial_gauss(size, sigma)
         x = xx[:,0]
         y = yy[0,:]
-        '''
-        Nr = 32
-        Ntheta = 256
-        theta_cart = np.arctan2(yy, xx)
-        r_cart = np.sqrt(xx**2 + yy**2)
-        rmin = np.min(r_cart)
-        rmax = np.max(r_cart)
-        tmin = np.min(theta_cart)
-        tmax = np.max(theta_cart)
-        theta = np.linspace(tmin, tmax, Ntheta, endpoint=True)
-        r = np.linspace(rmin, rmax, Nr, endpoint=True)
-        F = RectBivariateSpline(x, y, z)
-        rr, th = np.meshgrid(r, theta, indexing='ij')
-        x_pol = rr*np.cos(th)
-        y_pol = rr*np.sin(th)
-        z_pol = F(x_pol.ravel(), y_pol.ravel(), grid=False).reshape((Nr, Ntheta))
-        '''
         Nr = 200
         Ntheta = 360
         r, theta, z_pol = polar_coordinates.cart2finePol(x, y, z, Nr=Nr, Ntheta=Ntheta)
@@ -57,7 +40,36 @@ class Helper(unittest.TestCase):
             plt.figure()
             plt.imshow(z.T, origin='lower')
             plt.figure()
-            plt.imshow(z_pol, origin='lower')
+            plt.imshow(z_pol.T, origin='lower')
+            plt.show()
+            
+    def test_pol2cart(self, plot_it=np.format_float_scientific):
+        sigma = 16
+        size = 128
+        Nr = 64
+        Ntheta = 360
+        Nx = 128
+        Ny = 128
+        r = np.arange(0, Nr)
+        g = np.exp(-r**2/(2*sigma**2))
+        g_pol = np.outer(g, np.ones(360))
+        theta = np.linspace(0, 2*np.pi, Ntheta)
+        x, y, g_cart = polar_coordinates.pol2cart(r, theta, g_pol, Nx=Nx, Ny=Ny)
+
+        ind1, ind2, ind3 = Nx//2, 10, 20
+        x_test = [x[ind1], x[ind2], x[ind3]] 
+        y_test = [y[ind1], y[ind2], y[ind3]]
+        x_test_mesh, y_test_mesh = np.meshgrid(x_test, y_test, indexing='ij')
+        r_test_input = np.sqrt(x_test_mesh**2 + y_test_mesh**2)
+        test_output = np.exp(-r_test_input**2/(2*sigma**2)).ravel()
+        cart_output = np.array(g_cart[np.ix_([ind1, ind2, ind3],[ind1, ind2, ind3])]).ravel()
+        for i in range(0, 6):
+            self.assertAlmostEqual(test_output[i], cart_output[i], places=3)
+        if plot_it:
+            plt.figure()
+            plt.imshow(g_pol.T, origin='lower')
+            plt.figure()
+            plt.imshow(g_cart.T, origin='lower')
             plt.show()
 
 if __name__=='__main__':
