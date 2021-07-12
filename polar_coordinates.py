@@ -3,7 +3,7 @@ import numpy as np
 
 from scipy.interpolate import RectBivariateSpline
 
-def cart2pol(x, y, cart, Nr=200, Ntheta=360):
+def cart2pol(x, y, cart, Nr=200, Ntheta=360, r_out=None, theta_out=None):
     '''
     Conversion from cartesian to polar coordinates
     Parameter:
@@ -30,8 +30,16 @@ def cart2pol(x, y, cart, Nr=200, Ntheta=360):
     rmax = np.max(r_cart)
     tmin = np.min(theta_cart)
     tmax = np.max(theta_cart)
-    theta = np.linspace(tmin, tmax, Ntheta, endpoint=True)
-    r = np.linspace(rmin, rmax, Nr, endpoint=True)
+    if theta_out is None:
+        theta = np.linspace(tmin, tmax, Ntheta, endpoint=True)
+    else:
+        theta = theta_out
+        Ntheta = len(theta)
+    if r_out is None:
+        r = np.linspace(rmin, rmax, Nr, endpoint=True)
+    else:
+        r = r_out
+        Nr = len(r)
     F = RectBivariateSpline(x, y, cart)
     rr, th = np.meshgrid(r, theta, indexing='ij')
     x_pol = rr*np.cos(th)
@@ -39,7 +47,7 @@ def cart2pol(x, y, cart, Nr=200, Ntheta=360):
     pol = F(x_pol.ravel(), y_pol.ravel(), grid=False).reshape((Nr, Ntheta))
     return r, theta, pol
 
-def pol2cart(r, theta, pol, Nx=128, Ny=128):
+def pol2cart(r, theta, pol, Nx=128, Ny=128, x_out=None, y_out=None):
     '''
     Conversion from polar to cartesian coordinates
     Parameter:
@@ -51,6 +59,14 @@ def pol2cart(r, theta, pol, Nx=128, Ny=128):
                     1d array of theta-axis
             pol     2d array
                     data in polar coordinats
+            Nx      int, optional
+                    number of points in x_dir (only used if x_out now given)
+            Ny      int, optional
+                    number of points in x_dir (only used if y_out now given)
+            x_out   array, optional
+                    x-grid for the output (1d)
+            y_out   array, optional
+                    y-grid for the output (1d)
     output:
             x       array
                     1d array of x-axis
@@ -66,8 +82,14 @@ def pol2cart(r, theta, pol, Nx=128, Ny=128):
     x_max = np.max(x_pol)
     y_min = np.min(y_pol)
     y_max = np.max(y_pol)
-    x = np.linspace(x_min, x_max, Nx, endpoint=True)
-    y = np.linspace(y_min, y_max, Ny, endpoint=True)
+    if x_out is None:
+        x = np.linspace(x_min, x_max, Nx, endpoint=True)
+    else:
+        x = x_out
+    if y_out is None:
+        y = np.linspace(y_min, y_max, Ny, endpoint=True)
+    else:
+        y = y_out
     F = RectBivariateSpline(r, theta, pol)
     xx, yy = np.meshgrid(x, y, indexing='ij')
     r_cart = np.sqrt(xx**2+ yy**2)
@@ -88,4 +110,4 @@ def cart2cylindrical(t, x, y, cart, Nr=200, Ntheta=360):
     cylindrical = np.zeros((Nt, Nr, Ntheta))
     for i in range(0, Nt):
         r, theta, cylindrical[i,:,:] = cart2pol(x, y, cart[i,:,:], Nr, Ntheta)
-    return 
+    return r, theta, cylindrical

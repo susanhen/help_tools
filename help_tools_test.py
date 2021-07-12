@@ -21,9 +21,10 @@ class Helper(unittest.TestCase):
         xx, yy, z = fspecial_gauss(size, sigma)
         x = xx[:,0]
         y = yy[0,:]
+        Nx, Ny = len(x), len(y)
         Nr = 200
         Ntheta = 360
-        r, theta, z_pol = polar_coordinates.cart2finePol(x, y, z, Nr=Nr, Ntheta=Ntheta)
+        r, theta, z_pol = polar_coordinates.cart2pol(x, y, z, Nr=Nr, Ntheta=Ntheta)
 
         ind1a, ind1b, ind2, ind3 = Nr//2, Ntheta//2, 10, 20
         r_test = [r[ind1a], r[ind2], r[ind3]]
@@ -34,7 +35,7 @@ class Helper(unittest.TestCase):
         test_output = np.exp(-((x_test_input**2 + y_test_input**2)/(2.0*sigma**2))).ravel()
         polar_output = np.array(z_pol[np.ix_([ind1a, ind2, ind3],[ind1b, ind2, ind3])]).ravel()
         for i in range(0,6):
-            self.assertAlmostEqual(test_output[i], polar_output[i], places=3)
+            self.assertAlmostEqual(test_output[i], polar_output[i], delta=0.0005)
 
         if plot_it:
             plt.figure()
@@ -42,8 +43,15 @@ class Helper(unittest.TestCase):
             plt.figure()
             plt.imshow(z_pol.T, origin='lower')
             plt.show()
+        # veryfy backtransform 
+        x_new, y_new, z_new = polar_coordinates.pol2cart(r, theta, z_pol, x_out=x, y_out=y)
+        for i in range(1,Nx):
+            self.assertAlmostEqual(x_new[i], x[i])
+            for j in range(0,Ny):
+                self.assertAlmostEqual(y_new[j], y[j])
+                self.assertAlmostEqual(z_new[i,j], z[i,j], delta=0.1)
             
-    def test_pol2cart(self, plot_it=np.format_float_scientific):
+    def test_pol2cart(self, plot_it=False):
         sigma = 16
         size = 128
         Nr = 64
@@ -64,13 +72,22 @@ class Helper(unittest.TestCase):
         test_output = np.exp(-r_test_input**2/(2*sigma**2)).ravel()
         cart_output = np.array(g_cart[np.ix_([ind1, ind2, ind3],[ind1, ind2, ind3])]).ravel()
         for i in range(0, 6):
-            self.assertAlmostEqual(test_output[i], cart_output[i], places=3)
+            self.assertAlmostEqual(test_output[i], cart_output[i], delta=0.0005)
         if plot_it:
             plt.figure()
             plt.imshow(g_pol.T, origin='lower')
             plt.figure()
             plt.imshow(g_cart.T, origin='lower')
             plt.show()
+
+        #verify backtransform
+        r_new, theta_new, z_new = polar_coordinates.cart2pol(x, y, g_cart, r_out=r, theta_out=theta)
+        for i in range(1,Nr):
+            self.assertAlmostEqual(r_new[i], r[i])
+            for j in range(0,Ntheta):
+                self.assertAlmostEqual(theta_new[j], theta[j])
+                self.assertAlmostEqual(z_new[i,j], g_pol[i,j], delta=0.1)
+        
 
 if __name__=='__main__':
     unittest.main()
