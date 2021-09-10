@@ -386,8 +386,11 @@ def savefig(fn, tight=True):
 def figure():
     plt.figure()
 
-def plot(x, y):
-    plt.plot(x, y)
+def plot(x, y, ax=None):
+    if ax is None:
+        plt.plot(x, y)
+    else:
+        ax.plot(x,y)
 
 def show():
     plt.show()
