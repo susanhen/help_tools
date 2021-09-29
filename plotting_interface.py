@@ -23,6 +23,7 @@ def plot_3d_surface(x, y, z, radial_filter=False):
     axes = fig.add_subplot(111, projection='3d')
     x_mesh, y_mesh = np.meshgrid(x, y, indexing='ij')
     axes.plot_surface(x_mesh, y_mesh, (filt*z), cmap=cm.coolwarm)
+    return axes
 
 def plot_3d_as_2d(x, y, z, radial_filter=False, extent=None, ax=None, aspect='auto'):
     dx = x[1]-x[0]
@@ -205,6 +206,14 @@ def plot_surf_x_y(x, y, surf, extent=None):
     ax.set_ylabel(r'$y~[\mathrm{m}]$') 
     return ax
 
+def plot_3d_surf_x_y(x, y, surf):
+    ax = plot_3d_surface(x, y, surf)
+    ax.set_xlabel(r'$x~[\mathrm{m}]$')   
+    ax.set_ylabel(r'$y~[\mathrm{m}]$') 
+    return ax
+
+    
+
 def plot_surfaces_along_y_at_random(surface_list, y_label=r'$y~[\mathrm{m}]$', z_label=r'$\eta~[\mathrm{m}]$'):
     plt.figure()
     Nx, Ny = (surface_list[0]).eta.shape
@@ -386,14 +395,40 @@ def savefig(fn, tight=True):
 def figure():
     plt.figure()
 
-def plot(x, y, ax=None):
+def plot(x, y, ax=None, label=None):
     if ax is None:
-        plt.plot(x, y)
+        plt.plot(x, y, label=label)
     else:
-        ax.plot(x,y)
+        ax.plot(x,y, label=label)
+
+def legend():
+    plt.legend()
 
 def show():
     plt.show()
 
 def colorbar():
-    plt.colorbar()
+    return plt.colorbar()
+
+def subplots(figsize=None):
+    if figsize is None:
+        return plt.subplots()
+    else:
+        return plt.subplots(figsize=figsize)
+
+def get_cmap(cm_name):
+    return plt.get_cmap(cm_name)
+
+def xlabel(label):
+    plt.xlabel(label)
+
+def xlabel(label):
+    plt.ylabel(label)
+
+def label_x_eta():
+    plt.xlabel(r'$x~[\mathrm{m}]$')
+    plt.ylabel(r'$\eta~[\mathrm{m}]$')
+
+def label_t_eta():
+    plt.xlabel(r'$t~[\mathrm{s}]$')
+    plt.ylabel(r'$\eta~[\mathrm{m}]$')
