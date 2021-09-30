@@ -193,12 +193,17 @@ def plot_contourf(x, y, z, radial_filter=False, levels=None, z_label=None, exten
         ax.set_xlim(extent[0], extent[1])
         ax.set_ylim(extent[2], extent[3])
 
-def plot_surf_time_space(t, x, surf, extent=None):
-    ax = plot_3d_as_2d(t, x, surf, extent=extent) 
+def plot_surf_time_space(t, x, surf, extent=None, ax=None):
+    ax = plot_3d_as_2d(t, x, surf, extent=extent, ax=ax) 
     ax.set_xlabel(r'$t~[\mathrm{s}]$')   
     ax.set_ylabel(r'$x~[\mathrm{m}]$') 
     return ax
 
+def plot_surf_time_range(t, r, surf, extent=None, ax=None):
+    ax = plot_3d_as_2d(t, r, surf, extent=extent, ax=ax) 
+    ax.set_xlabel(r'$t~[\mathrm{s}]$')   
+    ax.set_ylabel(r'$r~[\mathrm{m}]$') 
+    return ax
 
 def plot_surf_x_y(x, y, surf, extent=None):
     ax = plot_3d_as_2d(x, y, surf, extent=extent) 
@@ -407,8 +412,9 @@ def legend():
 def show():
     plt.show()
 
-def colorbar():
-    return plt.colorbar()
+def colorbar(ax, label=None):
+    return plt.colorbar(ax=ax, label=label)
+
 
 def subplots(figsize=None):
     if figsize is None:
