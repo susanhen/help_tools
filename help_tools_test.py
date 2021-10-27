@@ -2,6 +2,7 @@ import unittest
 import numpy as np
 import matplotlib.pyplot as plt
 import polar_coordinates
+import plotting_interface
 
 def fspecial_gauss(size, sigma):
     
@@ -87,6 +88,26 @@ class Helper(unittest.TestCase):
             for j in range(0,Ntheta):
                 self.assertAlmostEqual(theta_new[j], theta[j])
                 self.assertAlmostEqual(z_new[i,j], g_pol[i,j], delta=0.1)
+
+    def test_pol_better(self, plot_it=False):
+        y = np.linspace(200, 700, 200)
+        x = np.linspace(-250, 250, 200)
+        xx, yy = np.meshgrid(x, y, indexing='ij')
+        data = np.sin(0.066*yy)
+        if plot_it:
+            plotting_interface.plot_3d_as_2d(x, y, data)
+
+        r, th, pol = polar_coordinates.cart2pol(x, y, data)
+        if plot_it:
+            plotting_interface.plot_3d_as_2d(r, th, pol)
+
+        x, y, cart = polar_coordinates.pol2cart(r, th, pol, x_out=x, y_out=y)
+        if plot_it:
+            plotting_interface.plot_3d_as_2d(x, y, cart)
+
+        for i in range(0, len(x)):
+            for j in range(0, len(y)):
+                self.assertAlmostEqual(data[i,j], cart[i,j], delta=0.03)
         
 
 if __name__=='__main__':
