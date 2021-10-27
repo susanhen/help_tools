@@ -6,6 +6,7 @@ from scipy.interpolate import RectBivariateSpline
 def cart2pol(x, y, cart, Nr=200, Ntheta=360, r_out=None, theta_out=None):
     '''
     Conversion from cartesian to polar coordinates
+    Extrapolation possible (can be avoided by setting r_out, theta_out accordingly)
     Parameter:
     ----------
     input:
@@ -50,6 +51,7 @@ def cart2pol(x, y, cart, Nr=200, Ntheta=360, r_out=None, theta_out=None):
 def pol2cart(r, theta, pol, Nx=128, Ny=128, x_out=None, y_out=None):
     '''
     Conversion from polar to cartesian coordinates
+    Extrapolation possible (can be avoided by setting x_out, y_out correctly)
     Parameter:
     ----------
     input:
