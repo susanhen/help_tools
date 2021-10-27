@@ -86,15 +86,19 @@ def pol2cart(r, theta, pol, Nx=128, Ny=128, x_out=None, y_out=None):
         x = np.linspace(x_min, x_max, Nx, endpoint=True)
     else:
         x = x_out
+        Nx = len(x)
     if y_out is None:
         y = np.linspace(y_min, y_max, Ny, endpoint=True)
     else:
         y = y_out
+        Ny = len(y)
     F = RectBivariateSpline(r, theta, pol)
     xx, yy = np.meshgrid(x, y, indexing='ij')
     r_cart = np.sqrt(xx**2+ yy**2)
-    th_cart = np.arctan2(xx,yy)
+    th_cart = np.arctan2(yy,xx)
     cart = F(r_cart.ravel(), th_cart.ravel(), grid=False).reshape((Nx, Ny))
+    #find_invalid_indices = np.argwhere(r_cart<=np.max(r))
+    #cart[r_cart[find_invalid_indices], th_cart[find_invalid_indices]] = 0
     return x, y, cart
 
 
