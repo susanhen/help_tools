@@ -89,7 +89,7 @@ class Helper(unittest.TestCase):
                 self.assertAlmostEqual(theta_new[j], theta[j])
                 self.assertAlmostEqual(z_new[i,j], g_pol[i,j], delta=0.1)
 
-    def test_pol_better(self, plot_it=False):
+    def test_pol_better(self, plot_it=True):
         y = np.linspace(200, 700, 200)
         x = np.linspace(-250, 250, 200)
         xx, yy = np.meshgrid(x, y, indexing='ij')
@@ -104,6 +104,7 @@ class Helper(unittest.TestCase):
         x, y, cart = polar_coordinates.pol2cart(r, th, pol, x_out=x, y_out=y)
         if plot_it:
             plotting_interface.plot_3d_as_2d(x, y, cart)
+            plotting_interface.show()
 
         for i in range(0, len(x)):
             for j in range(0, len(y)):

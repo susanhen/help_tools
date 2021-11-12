@@ -400,7 +400,7 @@ def savefig(fn, tight=True):
 def figure():
     plt.figure()
 
-def plot(x, y, ax=None, label=None):
+def plot(x, y,  ax=None, label=None):
     if ax is None:
         plt.plot(x, y, label=label)
     else:
