@@ -39,7 +39,21 @@ def plot_3d_as_2d(x, y, z, radial_filter=False, extent=None, ax=None, aspect='au
         ax.set_xlim(extent[0], extent[1])
         ax.set_ylim(extent[2], extent[3])
     return ax
-    
+     
+def plot_k_spec(k, spec, radial_filter=False, extent=None, ax=None, upperHalf=True, linestring=None):    
+    if upperHalf:
+        N_cut = len(k)//2
+    else:
+        N_cut = len(k)
+    if linestring is None:
+        linestring = '-'
+    if ax is None:
+        fig, ax = plt.subplots()
+    ax.plot(k[N_cut:], spec[N_cut:], linestring)
+    ax.set_xlabel(r'$k~[\mathrm{rad~m}^{-1}]$') 
+    ax.set_ylabel(r'$F(k)~[??]$')
+    return ax
+
 def plot_kx_ky_coeffs(kx, ky, coeffs, radial_filter=False, extent=None, ax=None):     
     ax = plot_3d_as_2d(kx, ky, coeffs, radial_filter, extent)    
     ax.set_xlabel(r'$k_x~[\mathrm{rad~m}^{-1}]$') 
