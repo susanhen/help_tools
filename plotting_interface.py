@@ -219,14 +219,14 @@ def plot_surf_time_range(t, r, surf, extent=None, ax=None):
     ax.set_ylabel(r'$r~[\mathrm{m}]$') 
     return ax
 
-def plot_surf_x_y(x, y, surf, extent=None):
-    ax = plot_3d_as_2d(x, y, surf, extent=extent) 
+def plot_surf_x_y(x, y, surf, extent=None, ax=None):
+    ax = plot_3d_as_2d(x, y, surf, extent=extent, ax=ax) 
     ax.set_xlabel(r'$x~[\mathrm{m}]$')   
     ax.set_ylabel(r'$y~[\mathrm{m}]$') 
     return ax
 
-def plot_3d_surf_x_y(x, y, surf):
-    ax = plot_3d_surface(x, y, surf)
+def plot_3d_surf_x_y(x, y, surf, ax=None):
+    ax = plot_3d_surface(x, y, surf, ax=ax)
     ax.set_xlabel(r'$x~[\mathrm{m}]$')   
     ax.set_ylabel(r'$y~[\mathrm{m}]$') 
     return ax
@@ -402,7 +402,25 @@ def plot_disp_rel_for_Ueff_at(at_w, h, U_eff, psi, color, ax, extent=None):
     if not extent is None:
         ax.set_xlim(extent[0], extent[1])
         ax.set_ylim(extent[2], extent[3])
-    return CS    
+    return CS 
+
+def plot_x_eta(x, eta):
+    plt.figure()
+    plt.plot(x, eta)
+    plt.xlabel(r'$x~[m]$')
+    plt.ylabel(r'$\eta~[m]$')
+
+def plot_t_eta(t, eta):
+    plt.figure()
+    plt.plot(t, eta)
+    plt.xlabel(r'$t~[s]$')
+    plt.ylabel(r'$\eta~[m]$')
+
+def plot_r_eta(r, eta):
+    plt.figure()
+    plt.plot(r, eta)
+    plt.xlabel(r'$r~[m]$')
+    plt.ylabel(r'$\eta~[m]$')
 
 
 def savefig(fn, tight=True):
