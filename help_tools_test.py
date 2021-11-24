@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import polar_coordinates
 import plotting_interface
+import convolution
 
 def fspecial_gauss(size, sigma):
     
@@ -109,6 +110,23 @@ class Helper(unittest.TestCase):
         for i in range(0, len(x)):
             for j in range(0, len(y)):
                 self.assertAlmostEqual(data[i,j], cart[i,j], delta=0.03)
+
+    def test_convolution1d(self):
+        N = 200
+        x = np.linspace(0, 500, N)
+        eta = np.sin(0.066*x)
+        rect = np.zeros(N)
+        rect[N//2-50:N//2+50] = 1
+        rect = rect/np.sqrt(np.sum(rect))
+        c1 = convolution.convolve1d(rect, eta)
+        c2 = np.convolve(rect, eta, mode='same')
+        plt.figure()
+        plt.plot(x, rect)
+        plt.plot(x, eta)
+        plt.plot(x, c1, '--')
+        plt.plot(x, c2, ':')
+        plt.show()
+
         
 
 if __name__=='__main__':

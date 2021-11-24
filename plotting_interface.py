@@ -404,24 +404,56 @@ def plot_disp_rel_for_Ueff_at(at_w, h, U_eff, psi, color, ax, extent=None):
         ax.set_ylim(extent[2], extent[3])
     return CS 
 
-def plot_x_eta(x, eta):
-    plt.figure()
-    plt.plot(x, eta)
-    plt.xlabel(r'$x~[m]$')
-    plt.ylabel(r'$\eta~[m]$')
+def plot_x_eta(x, eta, ax=None):
+    if ax is None:
+        fig, ax = plt.subplots()
+    ax.plot(x, eta)
+    ax.set_xlabel(r'$x~[m]$')
+    ax.set_ylabel(r'$\eta~[m]$')
+    return ax
 
-def plot_t_eta(t, eta):
-    plt.figure()
-    plt.plot(t, eta)
-    plt.xlabel(r'$t~[s]$')
-    plt.ylabel(r'$\eta~[m]$')
+def plot_t_eta(t, eta, ax=None):
+    if ax is None:
+        fig, ax = plt.subplots()
+    ax.plot(t, eta)
+    ax.set_xlabel(r'$t~[s]$')
+    ax.set_ylabel(r'$\eta~[m]$')
+    return ax
 
-def plot_r_eta(r, eta):
-    plt.figure()
-    plt.plot(r, eta)
-    plt.xlabel(r'$r~[m]$')
-    plt.ylabel(r'$\eta~[m]$')
+def plot_r_eta(r, eta, ax=None):
+    if ax is None:
+        fig, ax = plt.subplots()
+    ax.plot(r, eta)
+    ax.set_xlabel(r'$r~[m]$')
+    ax.set_ylabel(r'$\eta~[m]$')
+    return ax
 
+
+def plot_x_eta_vel(x, eta, vel, ax=None):
+    if ax is None:
+        fig, ax = plt.subplots()
+    ax.plot(x, eta)
+    ax.set_xlabel(r'$x~[m]$')
+    ax.set_ylabel(r'$\eta~[m]$')
+    ax2 = ax.twinx()
+    ax2.plot(x, vel, '--', color='orange')
+    ax2.set_ylabel(r'$v_h~[m]$')
+    return ax, ax2
+
+
+def plot_x_eta_intensity(x, eta, intensity, input_as_power=True, ax=None):
+    if ax is None:
+        fig, ax = plt.subplots()
+    ax.plot(x, eta)
+    ax.set_xlabel(r'$x~[m]$')
+    ax.set_ylabel(r'$\eta~[m]$')
+    ax2 = ax.twinx()
+    if input_as_power:
+        ax2.plot(x, 10*np.log10(intensity), '-.', color='r')
+    else:
+        ax2.plot(x, 20*np.log10(intensity), '-.', color='r')
+    ax2.set_ylabel(r'$I~[dB]$')
+    return ax, ax2
 
 def savefig(fn, tight=True):
     if tight:

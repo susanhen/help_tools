@@ -14,6 +14,11 @@ def switch_off(data):
     win = tukey(2*N, alpha=0.95)[N:]
     return win*data
 
+def dirac(N_window):
+    rect=np.zeros(N_window)
+    rect[N_window//2] = 1
+    return rect
+
 def rect(N_window, N_pulse_width):
     rect = np.zeros(N_window)
     rect[N_window//2-N_pulse_width//2+1:N_window//2+N_pulse_width//2+1] = 1
