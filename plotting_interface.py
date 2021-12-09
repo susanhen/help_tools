@@ -253,7 +253,24 @@ def plot_surfaces_along_y_at_pos(surface_list, x_pos, y_label=r'$y~[\mathrm{m}]$
     plt.ylabel(z_label)
     plt.legend() 
 
-def plot_disp_rel_kx_ky(w, h):
+def plot_disp_rel_kx_ky(w, h, extent=None, label=''):
+    k_disp_rel = w**2/9.81
+    kx_fine = np.linspace(-k_disp_rel, k_disp_rel, 300)
+    # plot positive ky
+    print('Warning: not fully implemented, current and shallow water not included')
+    ky_disp_rel_pos =  np.sqrt(k_disp_rel**2 - kx_fine**2)
+    plt.plot(kx_fine, ky_disp_rel_pos, 'w')
+    # plot negative ky
+    ky_disp_rel_neg =  -np.sqrt(k_disp_rel**2 - kx_fine**2)
+    p1 = plt.plot(kx_fine, ky_disp_rel_neg, 'w', label=label)
+    if not extent is None:
+        plt.xlim(extent[0], extent[1])
+        plt.ylim(extent[2], extent[3])
+    return p1
+
+
+def plot_disp_rel_Uk_psi_kx_ky(w, h):
+    # FIXME: add waterdepth function to invert dispersion relation
     k_disp_rel = w**2/9.81
     kx_fine = np.linspace(-k_disp_rel, k_disp_rel, 300)
     # plot positive ky
@@ -263,7 +280,6 @@ def plot_disp_rel_kx_ky(w, h):
     # plot negative ky
     ky_disp_rel_neg =  -np.sqrt(k_disp_rel**2 - kx_fine**2)
     plt.plot(kx_fine, ky_disp_rel_neg, 'w')
-
 
 
 def plot_disp_shell(axes, h, z, U, psi, label='', plot_type='surf', linestyles='line', put_clabel=True):
@@ -310,7 +326,7 @@ def plot_multiple_disp_rel(h, z_list, U_list, psi_list, label_list, plot_type='s
     if plot_type!='surf':
         plt.legend()
 
-def plot_disp_rel_at(at_w, h, z, U, psi, color, ax, extent=None):
+def plot_disp_rel_at(at_w, h, z, U, psi, color, ax, extent=None, linestyle='solid', label=''):
     '''
     Plot the dispersion relation for provided frequencie(s) and the current profile U(z).
     The calculations are based on the assumption of Stewart and Joy for the effective current
@@ -330,6 +346,8 @@ def plot_disp_rel_at(at_w, h, z, U, psi, color, ax, extent=None):
                         color for plotting 
                 extent  tupel/array optional
                         to limit the extent of the drawing
+                linestyle   string
+                            'solid', 'dashed',..
         output
                 CS      array
                         representation of the contour(s)
@@ -348,6 +366,10 @@ def plot_disp_rel_at(at_w, h, z, U, psi, color, ax, extent=None):
         CS = ax.contour(kx, ky, ww, origin='lower', levels=[at_w], colors=color)
     else:
         CS = ax.contour(kx, ky, ww, origin='lower', levels=at_w, colors=color)
+
+    CS.collections[0].set_label(label)
+    for c in CS.collections:
+        c.set_linestyle(linestyle)
     ax.set_aspect('equal')
     if not extent is None:
         ax.set_xlim(extent[0], extent[1])
@@ -432,12 +454,14 @@ def plot_r_eta(r, eta, ax=None):
 def plot_x_eta_vel(x, eta, vel, ax=None):
     if ax is None:
         fig, ax = plt.subplots()
-    ax.plot(x, eta)
+    ax.plot(x, eta, label=r'$x~[m]$')
     ax.set_xlabel(r'$x~[m]$')
     ax.set_ylabel(r'$\eta~[m]$')
     ax2 = ax.twinx()
-    ax2.plot(x, vel, '--', color='orange')
-    ax2.set_ylabel(r'$v_h~[m]$')
+    ax2.plot(x, vel, '--', color='darkorange', label=r'$v_h~[ms^{-1}]$')
+    ax2.set_ylabel(r'$v_h~[ms^{-1}]$')
+    ax.legend(loc=2)
+    ax2.legend(loc=1)
     return ax, ax2
 
 
