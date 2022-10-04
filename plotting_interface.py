@@ -385,7 +385,7 @@ def plot_multiple_disp_rel_at(at_w, h, z_list, U_list, psi_list, label_list, plo
     ax[0].set_legend(lines, label_list)
 
 
-def plot_disp_rel_for_Ueff_at(at_w, h, U_eff, psi, color, ax, extent=None):
+def plot_disp_rel_for_Ueff_at(at_w, h, k, U_eff, psi, color, ax, extent=None, label=''):
     '''
     Plot the dispersion relation for provided frequencie(s) and the current profile U(z).
     The calculations are based on the assumption of Stewart and Joy for the effective current
@@ -395,8 +395,10 @@ def plot_disp_rel_for_Ueff_at(at_w, h, U_eff, psi, color, ax, extent=None):
         input
                 at_w    array/float
                         frequencie(s) of interest
+                k       array/float
+                        wavenumber discretization for U_eff
                 U_eff   array   
-                        velocity profile over z
+                        effective kurrent as function of k
                 psi     float
                         angle between waves and current
                 color   string
@@ -408,8 +410,6 @@ def plot_disp_rel_for_Ueff_at(at_w, h, U_eff, psi, color, ax, extent=None):
                         representation of the contour(s)
     '''
     g = 9.81
-    dk = 0.005
-    k = np.arange(0.01, 0.7, dk)
     dtheta=0.05
     theta=np.arange(0, 2*np.pi+dtheta, dtheta)
     kk, th = np.meshgrid(k, theta, indexing='ij')
@@ -420,6 +420,7 @@ def plot_disp_rel_for_Ueff_at(at_w, h, U_eff, psi, color, ax, extent=None):
         CS = ax.contour(kx, ky, ww, origin='lower', levels=[at_w], colors=color)
     else:
         CS = ax.contour(kx, ky, ww, origin='lower', levels=at_w, colors=color)
+    CS.collections[0].set_label(label)
     ax.set_aspect('equal')
     if not extent is None:
         ax.set_xlim(extent[0], extent[1])
