@@ -480,11 +480,18 @@ def plot_x_eta_intensity(x, eta, intensity, input_as_power=True, ax=None):
     ax2.set_ylabel(r'$I~[dB]$')
     return ax, ax2
 
-def savefig(fn, tight=True):
+def savefig(fn, tight=True, dpi=None):
     if tight:
-        plt.savefig(fn, bbox_inches='tight')
+        if dpi is None:
+            plt.savefig(fn, bbox_inches='tight')
+        else:
+            plt.savefig(fn, bbox_inches='tight', dpi=dpi)
+
     else:
-        plt.savefig(fn)
+        if dpi is None:
+            plt.savefig(fn)
+        else:
+            plt.savefig(fn, dpi=dpi)
 
 def figure():
     plt.figure()
