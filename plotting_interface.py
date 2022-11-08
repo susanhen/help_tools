@@ -225,8 +225,8 @@ def plot_surf_x_y(x, y, surf, extent=None, ax=None):
     ax.set_ylabel(r'$y~[\mathrm{m}]$') 
     return ax
 
-def plot_3d_surf_x_y(x, y, surf, ax=None):
-    ax = plot_3d_surface(x, y, surf, ax=ax)
+def plot_3d_surf_x_y(x, y, surf):
+    ax = plot_3d_surface(x, y, surf)
     ax.set_xlabel(r'$x~[\mathrm{m}]$')   
     ax.set_ylabel(r'$y~[\mathrm{m}]$') 
     return ax
