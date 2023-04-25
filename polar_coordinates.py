@@ -60,7 +60,7 @@ def pol2cart(r, theta, pol, Nx=128, Ny=128, x_out=None, y_out=None):
             theta   array
                     1d array of theta-axis
             pol     2d array
-                    data in polar coordinats
+                    data in polar coordinats (r,theta)
             Nx      int, optional
                     number of points in x_dir (only used if x_out now given)
             Ny      int, optional
@@ -80,8 +80,8 @@ def pol2cart(r, theta, pol, Nx=128, Ny=128, x_out=None, y_out=None):
     rr, th = np.meshgrid(r, theta, indexing='ij')
     x_pol = rr*np.cos(th)
     y_pol = rr*np.sin(th)
-    x_min = np.min(x_pol)
-    x_max = np.max(x_pol)
+    x_min = np.min(r)#np.min(x_pol)
+    x_max = np.max(r)#np.max(x_pol)
     y_min = np.min(y_pol)
     y_max = np.max(y_pol)
     if x_out is None:
@@ -95,17 +95,18 @@ def pol2cart(r, theta, pol, Nx=128, Ny=128, x_out=None, y_out=None):
         y = y_out
         Ny = len(y)
     F = RectBivariateSpline(r, theta, pol)
-    
     xx, yy = np.meshgrid(x, y, indexing='ij')
+    mask = np.logical_and((xx**2 + yy**2)<=np.max(r)**2, np.abs(np.arctan2(yy,xx))<np.abs(np.max(th))).astype(int)
+    from help_tools import plotting_interface
+    #plotting_interface.plot_3d_as_2d(r, theta, np.log10(np.abs(F(r,theta))**2))
+    ##plotting_interface.plot_surf_x_y(x, y, mask)
+    #plotting_interface.show()
+
     r_cart = np.sqrt(xx**2+ yy**2)
     th_cart = np.arctan2(yy,xx)
     if np.max(theta)>np.pi:
         th_cart += np.pi
-    #cart = np.where(r_cart<=np.max(r), F(r_cart.ravel(), th_cart.ravel(), grid=False).reshape((Nx, Ny)), 0)
-    cart = F(r_cart.ravel(), th_cart.ravel(), grid=False).reshape((Nx, Ny))
-    
-    #find_invalid_indices = np.argwhere(r_cart<=np.max(r))
-    #cart[r_cart[find_invalid_indices], th_cart[find_invalid_indices]] = 0
+    cart = np.where(mask, F(r_cart.ravel(), th_cart.ravel(), grid=False).reshape((Nx, Ny)), np.nan)
     return x, y, cart
 
 

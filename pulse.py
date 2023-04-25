@@ -65,7 +65,7 @@ def hereon(N_window, N_pulse_width):
     return combined   
 
 def riverRad(N_window, N_pulse_width):
-    pulse =  gaussian(N_window, std=N_pulse_width/4)
+    pulse =  gaussian(N_window, std=N_pulse_width/4)**1
     pulse /= np.sum(pulse)
     return pulse
 

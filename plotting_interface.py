@@ -25,7 +25,7 @@ def plot_3d_surface(x, y, z, radial_filter=False):
     axes.plot_surface(x_mesh, y_mesh, (filt*z), cmap=cm.coolwarm)
     return axes
 
-def plot_3d_as_2d(x, y, z, radial_filter=False, extent=None, ax=None, aspect='auto'):
+def plot_3d_as_2d(x, y, z, radial_filter=False, extent=None, ax=None, aspect='auto', colorbar=False):
     dx = x[1]-x[0]
     dy = y[1]-y[0]
     if radial_filter:
@@ -33,8 +33,10 @@ def plot_3d_as_2d(x, y, z, radial_filter=False, extent=None, ax=None, aspect='au
     else:
         filt = 1
     if ax is None:
-        fig, ax = plt.subplots()
-    ax.imshow((filt*z).T, origin='lower', extent=(x[0]-dx//2, x[-1]+dx//2, y[0]-dy//2, y[-1]+dy//2 ), aspect=aspect)
+        fig, ax = plt.subplots(figsize=(4,4))
+    sh = ax.imshow((filt*z).T, origin='lower', extent=(x[0]-dx//2, x[-1]+dx//2, y[0]-dy//2, y[-1]+dy//2 ), aspect=aspect, interpolation=None)
+    if colorbar:
+        bar = plt.colorbar(sh)
     if not extent is None:
         ax.set_xlim(extent[0], extent[1])
         ax.set_ylim(extent[2], extent[3])
@@ -60,8 +62,8 @@ def plot_kx_ky_coeffs(kx, ky, coeffs, radial_filter=False, extent=None, ax=None)
     ax.set_ylabel(r'$k_y~[\mathrm{rad~m}^{-1}]$')
     return ax
      
-def plot_kx_ky_spec(kx, ky, spec, radial_filter=False, extent=None, ax=None):    
-    ax = plot_3d_as_2d(kx, ky, spec, radial_filter, extent, ax, aspect=1)
+def plot_kx_ky_spec(kx, ky, spec, radial_filter=False, extent=None, ax=None, colorbar=False):    
+    ax = plot_3d_as_2d(kx, ky, spec, radial_filter, extent, ax, aspect=1, colorbar=colorbar)
     ax.set_xlabel(r'$k_x~[\mathrm{rad~m}^{-1}]$') 
     ax.set_ylabel(r'$k_y~[\mathrm{rad~m}^{-1}]$')
     return ax
@@ -207,20 +209,20 @@ def plot_contourf(x, y, z, radial_filter=False, levels=None, z_label=None, exten
         ax.set_xlim(extent[0], extent[1])
         ax.set_ylim(extent[2], extent[3])
 
-def plot_surf_time_space(t, x, surf, extent=None, ax=None):
-    ax = plot_3d_as_2d(t, x, surf, extent=extent, ax=ax) 
+def plot_surf_time_space(t, x, surf, extent=None, ax=None, colorbar=False):
+    ax = plot_3d_as_2d(t, x, surf, extent=extent, ax=ax, colorbar=colorbar) 
     ax.set_xlabel(r'$t~[\mathrm{s}]$')   
     ax.set_ylabel(r'$x~[\mathrm{m}]$') 
     return ax
 
-def plot_surf_time_range(t, r, surf, extent=None, ax=None):
-    ax = plot_3d_as_2d(t, r, surf, extent=extent, ax=ax) 
+def plot_surf_time_range(t, r, surf, extent=None, ax=None, colorbar=False):
+    ax = plot_3d_as_2d(t, r, surf, extent=extent, ax=ax, colorbar=colorbar) 
     ax.set_xlabel(r'$t~[\mathrm{s}]$')   
     ax.set_ylabel(r'$r~[\mathrm{m}]$') 
     return ax
 
-def plot_surf_x_y(x, y, surf, extent=None, ax=None):
-    ax = plot_3d_as_2d(x, y, surf, extent=extent, ax=ax) 
+def plot_surf_x_y(x, y, surf, extent=None, ax=None, colorbar=False):
+    ax = plot_3d_as_2d(x, y, surf, extent=extent, ax=ax, colorbar=colorbar) 
     ax.set_xlabel(r'$x~[\mathrm{m}]$')   
     ax.set_ylabel(r'$y~[\mathrm{m}]$') 
     return ax
