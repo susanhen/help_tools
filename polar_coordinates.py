@@ -80,8 +80,10 @@ def pol2cart(r, theta, pol, Nx=128, Ny=128, x_out=None, y_out=None):
     rr, th = np.meshgrid(r, theta, indexing='ij')
     x_pol = rr*np.cos(th)
     y_pol = rr*np.sin(th)
-    x_min = np.min(r)#np.min(x_pol)
-    x_max = np.max(r)#np.max(x_pol)
+    #x_min = np.min(r)#np.min(x_pol)
+    #x_max = np.max(r)#np.max(x_pol)
+    x_min = np.min(x_pol)
+    x_max = np.max(x_pol)
     y_min = np.min(y_pol)
     y_max = np.max(y_pol)
     if x_out is None:

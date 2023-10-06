@@ -69,6 +69,12 @@ def riverRad(N_window, N_pulse_width):
     pulse /= np.sum(pulse)
     return pulse
 
+
+pulse_dict = {'hereon':hereon, 'rect':rect, 'riverRad':riverRad, 'dirac':dirac}
+
+def get(pulse_type, Nx, N_pulse_length):
+    return pulse_dict[pulse_type](Nx, N_pulse_length)
+
 if __name__=='__main__':
     import pylab as plt
     pulse = hereon(1000, 150)

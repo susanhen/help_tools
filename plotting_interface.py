@@ -25,7 +25,7 @@ def plot_3d_surface(x, y, z, radial_filter=False):
     axes.plot_surface(x_mesh, y_mesh, (filt*z), cmap=cm.coolwarm)
     return axes
 
-def plot_3d_as_2d(x, y, z, radial_filter=False, extent=None, ax=None, aspect='auto', colorbar=False):
+def plot_3d_as_2d(x, y, z, radial_filter=False, extent=None, ax=None, aspect='auto', colorbar=False, cb_label='', data_min=None, data_max=None, cmap='viridis'):
     dx = x[1]-x[0]
     dy = y[1]-y[0]
     if radial_filter:
@@ -34,9 +34,9 @@ def plot_3d_as_2d(x, y, z, radial_filter=False, extent=None, ax=None, aspect='au
         filt = 1
     if ax is None:
         fig, ax = plt.subplots(figsize=(4,4))
-    sh = ax.imshow((filt*z).T, origin='lower', extent=(x[0]-dx//2, x[-1]+dx//2, y[0]-dy//2, y[-1]+dy//2 ), aspect=aspect, interpolation=None)
+    sh = ax.imshow((filt*z).T, origin='lower', extent=(x[0]-dx//2, x[-1]+dx//2, y[0]-dy//2, y[-1]+dy//2 ), aspect=aspect, interpolation=None, vmin=data_min, vmax=data_max, cmap=cmap)
     if colorbar:
-        bar = plt.colorbar(sh)
+        bar = plt.colorbar(sh, ax=ax, label=cb_label)
     if not extent is None:
         ax.set_xlim(extent[0], extent[1])
         ax.set_ylim(extent[2], extent[3])
@@ -56,20 +56,24 @@ def plot_k_spec(k, spec, radial_filter=False, extent=None, ax=None, upperHalf=Tr
     ax.set_ylabel(r'$F(k)~[??]$')
     return ax
 
-def plot_kx_ky_coeffs(kx, ky, coeffs, radial_filter=False, extent=None, ax=None):     
-    ax = plot_3d_as_2d(kx, ky, coeffs, radial_filter, extent)    
+def plot_kx_ky_coeffs(kx, ky, coeffs, radial_filter=False, extent=None, ax=None, cmap='viridis'):     
+    ax = plot_3d_as_2d(kx, ky, coeffs, radial_filter, extent, cmap=cmap)    
     ax.set_xlabel(r'$k_x~[\mathrm{rad~m}^{-1}]$') 
     ax.set_ylabel(r'$k_y~[\mathrm{rad~m}^{-1}]$')
     return ax
      
-def plot_kx_ky_spec(kx, ky, spec, radial_filter=False, extent=None, ax=None, colorbar=False):    
-    ax = plot_3d_as_2d(kx, ky, spec, radial_filter, extent, ax, aspect=1, colorbar=colorbar)
+def plot_kx_ky_spec(kx, ky, spec, radial_filter=False, extent=None, ax=None, colorbar=False, spec_min=None, spec_max=None, cmap='viridis'):    
+    if not spec_min is None:
+        data = np.where(spec<spec_min, spec_min, spec)
+    if not spec_max is None:
+        data = np.where(spec>spec_max, spec_max, spec)
+    ax = plot_3d_as_2d(kx, ky, spec, radial_filter, extent, ax, aspect=1, colorbar=colorbar, data_min=spec_min, data_max=spec_max, cmap=cmap)
     ax.set_xlabel(r'$k_x~[\mathrm{rad~m}^{-1}]$') 
     ax.set_ylabel(r'$k_y~[\mathrm{rad~m}^{-1}]$')
     return ax
 
-def plot_k_w_spec(k, w, spec, disp_filter=False, extent=None, ax=None):  
-    ax = plot_3d_as_2d(k, w, spec, disp_filter, extent, ax)    
+def plot_k_w_spec(k, w, spec, disp_filter=False, extent=None, ax=None, cmap='viridis'):  
+    ax = plot_3d_as_2d(k, w, spec, disp_filter, extent, ax, cmap=cmap)    
     ax.set_xlabel(r'$k~[\mathrm{rad~m}^{-1}]$') 
     ax.set_ylabel(r'$\omega~[\mathrm{rad~Hz}]$')
     return ax
@@ -209,20 +213,20 @@ def plot_contourf(x, y, z, radial_filter=False, levels=None, z_label=None, exten
         ax.set_xlim(extent[0], extent[1])
         ax.set_ylim(extent[2], extent[3])
 
-def plot_surf_time_space(t, x, surf, extent=None, ax=None, colorbar=False):
-    ax = plot_3d_as_2d(t, x, surf, extent=extent, ax=ax, colorbar=colorbar) 
+def plot_surf_time_space(t, x, surf, extent=None, ax=None, colorbar=False, cb_label='', cmap='viridis'):
+    ax = plot_3d_as_2d(t, x, surf, extent=extent, ax=ax, colorbar=colorbar, cb_label=cb_label, cmap=cmap) 
     ax.set_xlabel(r'$t~[\mathrm{s}]$')   
     ax.set_ylabel(r'$x~[\mathrm{m}]$') 
     return ax
 
-def plot_surf_time_range(t, r, surf, extent=None, ax=None, colorbar=False):
-    ax = plot_3d_as_2d(t, r, surf, extent=extent, ax=ax, colorbar=colorbar) 
+def plot_surf_time_range(t, r, surf, extent=None, ax=None, colorbar=False, cb_label='', cmap='viridis'):
+    ax = plot_3d_as_2d(t, r, surf, extent=extent, ax=ax, colorbar=colorbar, cb_label=cb_label, cmap=cmap) 
     ax.set_xlabel(r'$t~[\mathrm{s}]$')   
     ax.set_ylabel(r'$r~[\mathrm{m}]$') 
     return ax
 
-def plot_surf_x_y(x, y, surf, extent=None, ax=None, colorbar=False):
-    ax = plot_3d_as_2d(x, y, surf, extent=extent, ax=ax, colorbar=colorbar) 
+def plot_surf_x_y(x, y, surf, extent=None, ax=None, colorbar=False, cb_label='', cmap='viridis'):
+    ax = plot_3d_as_2d(x, y, surf, extent=extent, ax=ax, colorbar=colorbar, cb_label=cb_label, cmap=cmap) 
     ax.set_xlabel(r'$x~[\mathrm{m}]$')   
     ax.set_ylabel(r'$y~[\mathrm{m}]$') 
     return ax
@@ -510,8 +514,8 @@ def legend():
 def show():
     plt.show()
 
-def colorbar(ax, label=None):
-    return plt.colorbar(ax=ax, label=label)
+def colorbar(img, ax, label=None):
+    return plt.colorbar(img, ax=ax, label=label)
 
 
 def subplots(figsize=None):
